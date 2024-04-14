@@ -1,6 +1,6 @@
 #include "hashcalculatorelement.h"
 
-HashCalculatorElement::HashCalculatorElement(VScrollBoxElement* parent)
+HashCalculatorElement::HashCalculatorElement(VScrollBoxElement *parent)
     : VScrollBoxElement(parent)
 {
     setHeight(70);

@@ -69,7 +69,11 @@ void MainWindow::calculteHash(const QString &filePath, const QString& hash)
     scrollBox->addWidget(progress);
     connect(thread, &QThread::started, hasher, &HashCalculator::calculate);
     connect(hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
-    connect(hasher, &HashCalculator::errorOccured, scrollBox, &VerticalScrollBox::deleteLast);
+    connect(hasher, &HashCalculator::errorOccured, this, [=](QString path, QString error){
+        thread->quit(); scrollBox->deleteLast();
+        scrollBox->addWidget(new ErrorElement(path, error));
+        if (cou < assets.count()) calculteHash(assets[cou].second, assets[cou].first);
+    });
     connect(hasher, &HashCalculator::hashCalculated, this, [=](QString str){
         thread->quit(); scrollBox->deleteLast();
         scrollBox->addWidget(new FileHashInfo(filePath, hash, str));

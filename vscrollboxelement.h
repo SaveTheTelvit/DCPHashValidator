@@ -30,10 +30,11 @@ public:
 private:
     struct InterfaceWidgetInfo
     {
-        InterfaceWidgetInfo(QWidget* w, int policy) : widget(w), horizontalPolicy(policy) {desiredSize = w->size();}
+        InterfaceWidgetInfo(QWidget* w, int policy) : widget(w), horizontalPolicy(policy) {desiredSize = w->size(); desiredPoint = w->pos();}
         QWidget* widget;
         int horizontalPolicy = StaticPolicy;
         QSize desiredSize;
+        QPoint desiredPoint;
     };
     QList<InterfaceWidgetInfo> interfaceWidgets;
     int policySpace = 0;

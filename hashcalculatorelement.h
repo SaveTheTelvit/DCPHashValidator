@@ -10,7 +10,7 @@ class HashCalculatorElement : public VScrollBoxElement
 {
     Q_OBJECT
 public:
-    HashCalculatorElement(VScrollBoxElement* parent = nullptr);
+    HashCalculatorElement(VScrollBoxElement *parent = nullptr);
     void setValue(int value);
 
 private:

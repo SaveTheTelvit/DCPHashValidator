@@ -19,7 +19,7 @@ public:
 
 signals:
     void hashCalculated(const QString& hash);
-    void errorOccured(const QString& error);
+    void errorOccured(const QString &filePath, const QString& error);
     void processingProcess(int percent);
 
 private:

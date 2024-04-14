@@ -54,11 +54,28 @@ void VScrollBoxElement::resizeEvent(QResizeEvent *event)
         QWidget* wi = interfaceWidgets[i].widget;
         switch (interfaceWidgets[i].horizontalPolicy) {
         case MovingPolicy:
-
+        {
+            if (wi->x() + wi->width() + policySpace >= event->size().width()) {
+                int newXPos = event->size().width() - wi->width() - policySpace;
+                if (newXPos < policySpace) newXPos = policySpace;
+                wi->move(newXPos, wi->y());
+            } else if (interfaceWidgets[i].desiredPoint.x() > wi->x()) {
+                if (interfaceWidgets[i].desiredPoint.x() > event->size().width() - policySpace) {
+                    int newXPos = event->size().width() - wi->width() - policySpace;
+                    if (newXPos < policySpace) newXPos = policySpace;
+                    wi->move(newXPos, wi->y());
+                } else {
+                    wi->move(interfaceWidgets[i].desiredPoint);
+                }
+            }
             break;
+        }
         case MovingToRightBorder:
         {
-            wi->move(event->size().width() - wi->width() - policySpace, wi->y());
+            int newXPos = event->size().width() - wi->width() - policySpace;
+            if (newXPos < policySpace) newXPos = policySpace;
+            wi->move(newXPos, wi->y());
+            break;
         }
         case ResizePolicy:
         {
@@ -70,18 +87,22 @@ void VScrollBoxElement::resizeEvent(QResizeEvent *event)
                     wi->resize(event->size().width() - wi->x() - policySpace, wi->height());
                 } else wi->resize(interfaceWidgets[i].desiredSize.width(), wi->height());
             }
+            break;
         }
-            break;
         case ResizeWithAspectRatio:
-
+        {
+            int lastX = wi->x() + wi->width();
+            if (lastX > event->size().width() - policySpace) {
+                float ratio = wi->width() / wi->height();
+            }
             break;
+        }
         case ResizeToRightBorder:
         {
             wi->resize(event->size().width() - wi->x() - policySpace, wi->height());
-        }
             break;
+        }
         default:
-
             break;
         }
     }

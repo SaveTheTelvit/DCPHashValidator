@@ -21,6 +21,7 @@
 #include "vscrollboxelement.h"
 #include "hashcalculatorelement.h"
 #include "hashcalculator.h"
+#include "errorelement.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

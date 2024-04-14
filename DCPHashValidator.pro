@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    errorelement.cpp \
     filehashinfo.cpp \
     hashcalculator.cpp \
     hashcalculatorelement.cpp \
@@ -18,6 +19,7 @@ SOURCES += \
     vscrollboxelement.cpp
 
 HEADERS += \
+    errorelement.h \
     filehashinfo.h \
     hashcalculator.h \
     hashcalculatorelement.h \

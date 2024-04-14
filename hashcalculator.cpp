@@ -11,7 +11,8 @@ void HashCalculator::calculate()
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        emit errorOccured("Файл не найден");
+        emit errorOccured(path, "Файл не найден");
+        return;
     }
     const int bufferSize = 4096;
     qint64 fileSize = file.size() / 1024;
