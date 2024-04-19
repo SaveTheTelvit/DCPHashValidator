@@ -16,7 +16,8 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     verticalscrollbox.cpp \
-    vscrollboxelement.cpp
+    vscrollboxelement.cpp \
+    xmlfilereadermodule.cpp
 
 HEADERS += \
     errorelement.h \
@@ -24,8 +25,10 @@ HEADERS += \
     hashcalculator.h \
     hashcalculatorelement.h \
     mainwindow.h \
+    structs.h \
     verticalscrollbox.h \
-    vscrollboxelement.h
+    vscrollboxelement.h \
+    xmlfilereadermodule.h
 
 FORMS += \
     filehashinfo.ui \

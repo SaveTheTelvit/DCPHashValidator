@@ -18,6 +18,7 @@ public:
     ~VerticalScrollBox();
     void addWidget(QWidget *w);
     void deleteLast();
+    void clear();
     //void deleteWidget();
 
 private:

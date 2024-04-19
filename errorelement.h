@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QLabel>
 #include <QPixmap>
+#include <QFont>
 
 #include "vscrollboxelement.h"
 

@@ -9,21 +9,26 @@
 #include <QTimer>
 #include <QDebug>
 
+#include <structs.h>
+
 class HashCalculator: public QObject
 {
     Q_OBJECT
 public:
     HashCalculator();
-    void setPath(QString str);
-    void calculate();
+    void setAssetList(QList<Asset> *assets);
+    void calculateNext();
+    void toBegin();
 
 signals:
-    void hashCalculated(const QString& hash);
-    void errorOccured(const QString &filePath, const QString& error);
+    void hashCalculated(int index, const QString &hash);
+    void errorOccured(int index, const QString &error);
     void processingProcess(int percent);
+    void endReached();
 
 private:
-    QString path;
+    QList<Asset> *assets;
+    int currentIndex = 0;
     qint64 processed = 0;
 };
 

@@ -64,7 +64,6 @@ bool VerticalScrollBox::eventFilter(QObject *obj, QEvent *event)
     if (event->type() == QEvent::Resize) {
         if (obj == viewport()) {
             QResizeEvent *e = static_cast<QResizeEvent*>(event);
-            qCritical() << e->size();
             resizeAllElements(e->size().width() - widthModificator);
             contentWidget->adjustSize();
         }
@@ -82,5 +81,12 @@ void VerticalScrollBox::deleteLast()
             delete w;
             contentWidget->adjustSize();
         }
+    }
+}
+
+void VerticalScrollBox::clear()
+{
+    while (content->count() > 0) {
+        deleteLast();
     }
 }
