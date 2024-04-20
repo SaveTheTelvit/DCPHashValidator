@@ -11,6 +11,9 @@ MainWindow::MainWindow(QWidget *parent)
     scrollBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     ui->gridLayout->addWidget(scrollBox, 0, 0);
     ui->gridLayout->addWidget(ui->widget, 0, 1);
+    controller = new ConnectionController(this);
+    ui->pushButton_2->setVisible(false);
+    ui->pushButton_3->setVisible(false);
 }
 
 void MainWindow::calculateHashes(QList<Asset> *assets)
@@ -19,43 +22,45 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
     HashCalculator *hasher = new HashCalculator;
     hasher->setAssetList(assets);
     hasher->moveToThread(thread);
-    QMetaObject::Connection *progressConnection = new QMetaObject::Connection;
-    connect(thread, &QThread::started, this, [=](){
+    controller->createConnection(thread, &QThread::started, this, [=](){
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
-        *progressConnection = connect(hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
+        controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
         emit calculateNext();
     });
-    connect(hasher, &HashCalculator::endReached, this, [=](){
-        disconnect(*progressConnection);
+    controller->createConnection(hasher, &HashCalculator::endReached, this, [=](){
+        controller->disconnectOnName("progress");
         scrollBox->deleteLast();
-        delete progressConnection;
+        controller->disconnectOnObject(this); // удаление всех соединений в которых завязан this
+        ui->pushButton->setEnabled(true);
     });
-    connect(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
-        disconnect(*progressConnection);
+    controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
+        controller->disconnectOnName("progress");
         scrollBox->deleteLast();
         scrollBox->addWidget(new ErrorElement((*assets)[index].path, error));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
-        *progressConnection = connect(hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
+        controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
         emit calculateNext();
     });
-    connect(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
-        disconnect(*progressConnection);
+    controller->createConnection(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
+        controller->disconnectOnName("progress");
         scrollBox->deleteLast();
         scrollBox->addWidget(new FileHashInfo((*assets)[index].path, (*assets)[index].hash, calculatedHash));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
-        *progressConnection = connect(hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
+        controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
         emit calculateNext();
     });
-    connect(this, &MainWindow::calculateNext, hasher, &HashCalculator::calculateNext);
+    controller->createConnection(this, &MainWindow::calculateNext, hasher, &HashCalculator::calculateNext);
     thread->start();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete controller;
+    delete scrollBox;
 }
 
 void MainWindow::on_pushButton_clicked()
@@ -70,12 +75,9 @@ void MainWindow::on_pushButton_clicked()
         QString filePath = dialog.selectedFiles().at(0);
         if (filePath != "") {
             scrollBox->clear();
+            ui->pushButton->setEnabled(false);
+            scrollBox->setFocus();
             calculateHashes(XmlFileReaderModule::getFullAsset(filePath));
-            // QList<Asset> *assets = XmlFileReaderModule::getFullAsset(filePath, XmlFileReaderModule::WithVolindex);
-            // for (int i = 0; i < assets->count(); ++i) {
-            //     Asset a = (*assets)[i];
-            //     qCritical() << a.hash + ' ' + a.id + ' ' + a.path + ' ' + (a.pklExist ? "true" : "false");
-            //}
         }
     }
 }
@@ -97,3 +99,31 @@ void MainWindow::on_pushButton_3_clicked()
     scrollBox->clear();
 }
 
+
+void MainWindow::on_lineEdit_returnPressed()
+{
+    if (ui->lineEdit->text() == "DevTools = On") {
+        ui->pushButton_2->setVisible(true);
+        ui->pushButton_3->setVisible(true);
+    } else if (ui->lineEdit->text() == "DevTools = Off") {
+        ui->pushButton_2->setVisible(false);
+        ui->pushButton_3->setVisible(false);
+    }
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (scrollBox->count() > 0) {
+        QMessageBox box;
+        box.setWindowTitle("Подтверждение выхода");
+        box.setText("Вы уверены что хотите закрыть программу?\n"
+                    "Все результаты вычислений будут потеряны.");
+        box.setIcon(QMessageBox::Warning);
+        QPushButton *yes = box.addButton("Да", QMessageBox::ActionRole);
+        box.addButton("Нет", QMessageBox::ActionRole);
+        box.exec();
+        if (box.clickedButton() == yes) {
+            event->accept();
+        } else event->ignore();
+    } else event->accept();
+}

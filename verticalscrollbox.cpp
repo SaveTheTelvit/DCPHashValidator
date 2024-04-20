@@ -90,3 +90,7 @@ void VerticalScrollBox::clear()
         deleteLast();
     }
 }
+
+int VerticalScrollBox::count() {
+    return content->count();
+}

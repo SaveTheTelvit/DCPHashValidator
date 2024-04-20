@@ -20,6 +20,7 @@ SOURCES += \
     xmlfilereadermodule.cpp
 
 HEADERS += \
+    connectioncontroller.h \
     errorelement.h \
     filehashinfo.h \
     hashcalculator.h \

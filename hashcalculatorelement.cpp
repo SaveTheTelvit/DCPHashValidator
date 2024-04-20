@@ -9,8 +9,6 @@ HashCalculatorElement::HashCalculatorElement(VScrollBoxElement *parent)
     progressBar->resize(0, 20);
     addInterfaceWidget(progressBar, 10, 25, VScrollBoxElement::ResizeToRightBorder);
     setPolicySpace(10);
-    setValue(277);
-
 }
 
 void HashCalculatorElement::setValue(int value)
