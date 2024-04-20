@@ -88,6 +88,8 @@ void MainWindow::on_pushButton_2_clicked()
         scrollBox->addWidget(new VScrollBoxElement(70));
     } else if (ui->lineEdit->text() == "progress") {
         scrollBox->addWidget(new HashCalculatorElement);
+    } if (ui->lineEdit->text() == "error") {
+        scrollBox->addWidget(new ErrorElement("/home/uservbox/dev/escodopolnitelniy_razmer_dobavlu/programs/build-DCPHashValidator-Desktop-Debug/DCPHashValidator/DCPHashValidator.exe", "test"));
     } else {
         QString path = "/home/uservbox/dev/programs/build-DCPHashValidator-Desktop-Debug/DCPHashValidator/DCPHashValidator.exe";
         scrollBox->addWidget(new FileHashInfo(path, "qw" + QString::number(items++)));

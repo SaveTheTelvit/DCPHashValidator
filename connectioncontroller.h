@@ -12,7 +12,7 @@ public:
     template<typename Sender, typename Receiver, typename Signal, typename Slot>
     bool createConnection(Sender *sender, Signal signal, Receiver *receiver, Slot slot) {
         QObject *obj1, *obj2;
-        if ((obj1 = dynamic_cast<QObject*>(sender)) != nullptr && (obj2 = dynamic_cast<QObject*>(receiver)) != nullptr) {
+        if ((obj1 = qobject_cast<QObject*>(sender))&& (obj2 = qobject_cast<QObject*>(receiver))) {
             QMetaObject::Connection connection = QObject::connect(sender, signal, receiver, slot);
             connections.append(Connection(obj1, obj2, connection));
             return true;
@@ -22,7 +22,7 @@ public:
     template<typename Sender, typename Receiver, typename Signal, typename Slot>
     bool createConnection(QString name ,Sender *sender, Signal signal, Receiver *receiver, Slot slot) {
         QObject *obj1, *obj2;
-        if ((obj1 = dynamic_cast<QObject*>(sender)) != nullptr && (obj2 = dynamic_cast<QObject*>(receiver)) != nullptr) {
+        if ((obj1 = qobject_cast<QObject*>(sender))&& (obj2 = qobject_cast<QObject*>(receiver))) {
             QMetaObject::Connection connection = QObject::connect(sender, signal, receiver, slot);
             connections.append(Connection(name, obj1, obj2, connection));
             return true;

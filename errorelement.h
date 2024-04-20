@@ -6,6 +6,7 @@
 #include <QPixmap>
 #include <QFont>
 
+#include "dynamicdeletelabel.h"
 #include "vscrollboxelement.h"
 
 class ErrorElement : public VScrollBoxElement

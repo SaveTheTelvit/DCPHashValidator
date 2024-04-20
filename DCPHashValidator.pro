@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    dynamicdeletelabel.cpp \
     errorelement.cpp \
     filehashinfo.cpp \
     hashcalculator.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
 
 HEADERS += \
     connectioncontroller.h \
+    dynamicdeletelabel.h \
     errorelement.h \
     filehashinfo.h \
     hashcalculator.h \
@@ -32,7 +34,6 @@ HEADERS += \
     xmlfilereadermodule.h
 
 FORMS += \
-    filehashinfo.ui \
     mainwindow.ui
 
 # Default rules for deployment.

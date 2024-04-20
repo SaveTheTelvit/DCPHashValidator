@@ -7,19 +7,22 @@ ErrorElement::ErrorElement(QString path, QString error, VScrollBoxElement *paren
 {
     QLabel *imgLabel = new QLabel;
     setHeight(70);
+    setPolicySpace(10);
     imgLabel->resize(50, 50);
     QPixmap pixmap(":/status/error.png");
     imgLabel->setPixmap(pixmap.scaled(imgLabel->size(), Qt::KeepAspectRatio));
     addInterfaceWidget(imgLabel, 10, 10, VScrollBoxElement::StaticPolicy);
     QFont font("Cantarell", 7);
-    QLabel *pathLabel = new QLabel;
-    pathLabel->setText("Путь: " + filePath);
-    pathLabel->resize(0, 10);
+    DynamicDeleteLabel *pathLabel = new DynamicDeleteLabel;
+    pathLabel->setDeleteIndex(6);
+    pathLabel->setContent("Путь: " + filePath);
+    pathLabel->resize(pathLabel->sizeHint());
     pathLabel->setFont(font);
     addInterfaceWidget(pathLabel, 80, 15, VScrollBoxElement::ResizeToRightBorder);
-    QLabel *errorLabel = new QLabel;
-    errorLabel->setText("Ошибка: " + errorStr);
-    errorLabel->resize(0, 10);
+    DynamicDeleteLabel *errorLabel = new DynamicDeleteLabel;
+    errorLabel->setDeleteIndex(6);
+    errorLabel->setContent("Ошибка: " + errorStr);
+    errorLabel->resize(errorLabel->sizeHint());
     errorLabel->setFont(font);
     addInterfaceWidget(errorLabel, 80, 45, VScrollBoxElement::ResizeToRightBorder);
 }
