@@ -19,8 +19,7 @@ VerticalScrollBox::VerticalScrollBox(QWidget *parent)
 
 VerticalScrollBox::~VerticalScrollBox()
 {
-    delete content;
-    delete contentWidget;
+
 }
 
 void VerticalScrollBox::addWidget(QWidget *w)

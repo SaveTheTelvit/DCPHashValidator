@@ -17,7 +17,6 @@ void HorizontalContainer::resizeEvent(QResizeEvent *event)
     QWidget::resizeEvent(event);
     if (labels.count() > 0) {
         int widthOnLabel = event->size().width() / labels.count() + ((event->size().width() % labels.count() > labels.count() / 2) ? 1 : 0);
-        qCritical() << widthOnLabel << event->size();
         for (int i = 0; i < labels.count(); ++i) {
             QLabel* label = labels[i];
             if (label != nullptr) {
