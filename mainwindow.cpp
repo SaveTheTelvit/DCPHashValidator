@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setVerison("1.0.0");
     setWindowTitle("Провека целостности DCP");
     scrollBox = new VerticalScrollBox(this);
     scrollBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -14,6 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     controller = new ConnectionController(this);
     ui->pushButton_2->setVisible(false);
     ui->pushButton_3->setVisible(false);
+    ui->lineEdit->setStyleSheet("QLineEdit {selection-background-color: transparent; "
+                                "background-color: transparent; "
+                                "border: none; "
+                                "selection-color: rgba(0,0,0,0); "
+                                "color: rgba(0,0,0,0);}"
+                                );
 }
 
 void MainWindow::calculateHashes(QList<Asset> *assets)
@@ -33,6 +40,8 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
         scrollBox->deleteLast();
         controller->disconnectOnObject(this); // удаление всех соединений в которых завязан this
         ui->pushButton->setEnabled(true);
+        thread->quit();
+        delete thread;
     });
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
@@ -88,7 +97,7 @@ void MainWindow::on_pushButton_2_clicked()
         scrollBox->addWidget(new VScrollBoxElement(70));
     } else if (ui->lineEdit->text() == "progress") {
         scrollBox->addWidget(new HashCalculatorElement);
-    } if (ui->lineEdit->text() == "error") {
+    } else if (ui->lineEdit->text() == "error") {
         scrollBox->addWidget(new ErrorElement("/home/uservbox/dev/escodopolnitelniy_razmer_dobavlu/programs/build-DCPHashValidator-Desktop-Debug/DCPHashValidator/DCPHashValidator.exe", "test"));
     } else {
         QString path = "/home/uservbox/dev/programs/build-DCPHashValidator-Desktop-Debug/DCPHashValidator/DCPHashValidator.exe";
@@ -101,15 +110,28 @@ void MainWindow::on_pushButton_3_clicked()
     scrollBox->clear();
 }
 
+void MainWindow::setVerison(QString version)
+{
+    ui->label->setText("Version " + version);
+}
 
 void MainWindow::on_lineEdit_returnPressed()
 {
     if (ui->lineEdit->text() == "DevTools = On") {
         ui->pushButton_2->setVisible(true);
         ui->pushButton_3->setVisible(true);
+        ui->lineEdit->setStyleSheet(QLineEdit().styleSheet());
+        ui->lineEdit->clear();
     } else if (ui->lineEdit->text() == "DevTools = Off") {
         ui->pushButton_2->setVisible(false);
         ui->pushButton_3->setVisible(false);
+        ui->lineEdit->setStyleSheet("QLineEdit {selection-background-color: transparent; "
+                                    "background-color: transparent; "
+                                    "border: none; "
+                                    "selection-color: rgba(0,0,0,0); "
+                                    "color: rgba(0,0,0,0);}"
+                                    );
+        ui->lineEdit->clear();
     }
 }
 

@@ -10,7 +10,7 @@ ErrorElement::ErrorElement(QString path, QString error, VScrollBoxElement *paren
     setPolicySpace(10);
     imgLabel->resize(50, 50);
     QPixmap pixmap(":/status/error.png");
-    imgLabel->setPixmap(pixmap.scaled(imgLabel->size(), Qt::KeepAspectRatio));
+    imgLabel->setPixmap(pixmap.scaled(imgLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     addInterfaceWidget(imgLabel, 10, 10, VScrollBoxElement::StaticPolicy);
     QFont font("Cantarell", 7);
     DynamicDeleteLabel *pathLabel = new DynamicDeleteLabel;
@@ -24,5 +24,5 @@ ErrorElement::ErrorElement(QString path, QString error, VScrollBoxElement *paren
     errorLabel->setContent("Ошибка: " + errorStr);
     errorLabel->resize(errorLabel->sizeHint());
     errorLabel->setFont(font);
-    addInterfaceWidget(errorLabel, 80, 45, VScrollBoxElement::ResizeToRightBorder);
+    addInterfaceWidget(errorLabel, 80, 40, VScrollBoxElement::ResizeToRightBorder);
 }

@@ -14,6 +14,7 @@ SOURCES += \
     filehashinfo.cpp \
     hashcalculator.cpp \
     hashcalculatorelement.cpp \
+    horizontalcontainer.cpp \
     main.cpp \
     mainwindow.cpp \
     verticalscrollbox.cpp \
@@ -27,6 +28,7 @@ HEADERS += \
     filehashinfo.h \
     hashcalculator.h \
     hashcalculatorelement.h \
+    horizontalcontainer.h \
     mainwindow.h \
     structs.h \
     verticalscrollbox.h \

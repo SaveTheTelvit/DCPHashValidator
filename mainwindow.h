@@ -57,6 +57,7 @@ private:
     bool processed = false;
     int lastViewportWidth = 0 , items = 0;
     void calculateHashes(QList<Asset> *assets);
+    void setVerison(QString version);
 protected:
     void closeEvent(QCloseEvent *event) override;
 };

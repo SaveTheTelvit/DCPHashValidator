@@ -51,9 +51,9 @@
       <widget class="QPushButton" name="pushButton_2">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>120</y>
-         <width>87</width>
+         <x>10</x>
+         <y>170</y>
+         <width>181</width>
          <height>26</height>
         </rect>
        </property>
@@ -65,18 +65,24 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>100</y>
          <width>181</width>
          <height>26</height>
         </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>ArrowCursor</cursorShape>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::ClickFocus</enum>
        </property>
       </widget>
       <widget class="QPushButton" name="pushButton_3">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>120</y>
-         <width>81</width>
+         <y>140</y>
+         <width>181</width>
          <height>26</height>
         </rect>
        </property>
@@ -94,7 +100,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>version 0.8</string>
+        <string/>
        </property>
        <property name="alignment">
         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

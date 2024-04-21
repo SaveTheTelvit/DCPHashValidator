@@ -7,6 +7,7 @@
 
 #include "dynamicdeletelabel.h"
 #include "vscrollboxelement.h"
+#include "horizontalcontainer.h"
 
 class FileHashInfo : public VScrollBoxElement
 {
