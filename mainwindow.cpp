@@ -38,10 +38,9 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
     controller->createConnection(hasher, &HashCalculator::endReached, this, [=](){
         controller->disconnectOnName("progress");
         scrollBox->deleteLast();
-        controller->disconnectOnObject(this); // удаление всех соединений в которых завязан this
         ui->pushButton->setEnabled(true);
+        controller->disconnectOnObject(this); // удаление всех соединений в которых завязан this
         thread->quit();
-        thread->deleteLater();
     });
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
@@ -62,6 +61,10 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
         emit calculateNext();
     });
     controller->createConnection(this, &MainWindow::calculateNext, hasher, &HashCalculator::calculateNext);
+    controller->createConnection(thread, &QThread::finished, this, [=](){
+        thread->deleteLater();
+        controller->disconnectOnObject(this);
+    });
     thread->start();
 }
 
