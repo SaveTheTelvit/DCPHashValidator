@@ -27,7 +27,7 @@ FileHashInfo::FileHashInfo(QString path, QString h1, QString h2, QWidget *parent
     addInterfaceWidget(pathLabel, 80, 15, VScrollBoxElement::ResizeToRightBorder);
     HorizontalContainer *container = new HorizontalContainer;
     DynamicDeleteLabel *hash1Label = new DynamicDeleteLabel;
-    hash1Label->setContent("Хэш-эталон: " + hash1);
+    hash1Label->setContent("Хеш-эталон: " + hash1);
     hash1Label->setFont(font);
     hash1Label->setDeleteIndex(12);
     hash1Label->resize(hash1Label->sizeHint());

@@ -14,6 +14,7 @@ void DynamicDeleteLabel::setContent(const QString &str)
 void DynamicDeleteLabel::setDeleteIndex(int i)
 {
     if (i >= 0) deleteIndex = i;
+    textOnWidth();
 }
 
 void DynamicDeleteLabel::textOnWidth()
