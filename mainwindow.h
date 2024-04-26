@@ -14,6 +14,7 @@
 #include <QThread>
 #include <QCloseEvent>
 #include <QMessageBox>
+#include <QIcon>
 
 #include "verticalscrollbox.h"
 #include "filehashinfo.h"
@@ -24,6 +25,7 @@
 #include "structs.h"
 #include "xmlfilereadermodule.h"
 #include "connectioncontroller.h"
+#include "settings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,6 +46,7 @@ private slots:
     void on_pushButton_2_clicked();
     void on_pushButton_3_clicked();
     void on_lineEdit_returnPressed();
+    void on_settingsButton_clicked();
 
 signals:
     void calculateNext();
@@ -51,6 +54,7 @@ signals:
 private:
     VerticalScrollBox *scrollBox;
     ConnectionController *controller;
+    Settings *settings;
     QString currentPath;
     Ui::MainWindow *ui;
     int cou = 0;
@@ -58,6 +62,8 @@ private:
     int lastViewportWidth = 0 , items = 0;
     void calculateHashes(QList<Asset> *assets);
     void setVerison(QString version);
+    void setupOnChanges(QList<QPair<int, bool>> changes);
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 };

@@ -6,8 +6,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setVerison("1.0.0");
+    ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
+    setVerison("1.1.0");
     setWindowTitle("Провека целостности DCP");
+    settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);
     scrollBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
     ui->gridLayout->addWidget(scrollBox, 0, 0);
@@ -21,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
                                 "selection-color: rgba(0,0,0,0); "
                                 "color: rgba(0,0,0,0);}"
                                 );
+    connect(settings, &Settings::changeSettings, this, &MainWindow::setupOnChanges);
 }
 
 void MainWindow::calculateHashes(QList<Asset> *assets)
@@ -136,10 +139,32 @@ void MainWindow::on_lineEdit_returnPressed()
     }
 }
 
+
+void MainWindow::on_settingsButton_clicked()
+{
+    settings->exec();
+}
+
+void MainWindow::setupOnChanges(QList<QPair<int, bool>> changes)
+{
+    for (auto it = changes.begin(); it != changes.end(); ++it) {
+        switch (it->first) {
+        case Settings::TopHint:
+            if (it->second) {
+                setWindowFlag(Qt::WindowStaysOnTopHint);
+            } else {
+                setWindowFlag(Qt::WindowStaysOnTopHint, false);
+            }
+            setVisible(true);
+            break;
+        }
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (scrollBox->count() > 0) {
-        QMessageBox box;
+        QMessageBox box(this);
         box.setWindowTitle("Подтверждение выхода");
         box.setText("Вы уверены что хотите закрыть программу?\n"
                     "Все результаты вычислений будут потеряны.");

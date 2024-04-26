@@ -4,9 +4,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-# You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+VERSION = 1.1.0
+QMAKE_TARGET_COMPANY = Eugene Dokuchaev
+QMAKE_TARGET_PRODUCT = DCP Hash Validator
+QMAKE_TARGET_COPYRIGHT = Eugene Dokuchaev
+
+win32: RC_ICONS = $$PWD/icon.ico
 
 SOURCES += \
     dynamicdeletelabel.cpp \
@@ -15,8 +18,10 @@ SOURCES += \
     hashcalculator.cpp \
     hashcalculatorelement.cpp \
     horizontalcontainer.cpp \
+    iconbutton.cpp \
     main.cpp \
     mainwindow.cpp \
+    settings.cpp \
     verticalscrollbox.cpp \
     vscrollboxelement.cpp \
     xmlfilereadermodule.cpp
@@ -29,14 +34,17 @@ HEADERS += \
     hashcalculator.h \
     hashcalculatorelement.h \
     horizontalcontainer.h \
+    iconbutton.h \
     mainwindow.h \
+    settings.h \
     structs.h \
     verticalscrollbox.h \
     vscrollboxelement.h \
     xmlfilereadermodule.h
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    settings.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
