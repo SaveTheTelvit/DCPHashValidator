@@ -17,10 +17,10 @@ public:
     VerticalScrollBox(QWidget *parent = nullptr);
     ~VerticalScrollBox();
     void addWidget(QWidget *w);
+    void swithLastWidget(QWidget *w);
     void deleteLast();
     void clear();
     int count();
-    //void deleteWidget();
 
 private:
     QVBoxLayout *content;

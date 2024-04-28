@@ -53,8 +53,7 @@ void MainWindow::calculateHashes(DCPPackage *package)
     });
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
-        scrollBox->deleteLast();
-        scrollBox->addWidget(new ErrorElement((*package)[index]->path, error));
+        scrollBox->swithLastWidget(new ErrorElement((*package)[index]->path, error));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
@@ -62,8 +61,7 @@ void MainWindow::calculateHashes(DCPPackage *package)
     });
     controller->createConnection(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
         controller->disconnectOnName("progress");
-        scrollBox->deleteLast();
-        scrollBox->addWidget(new FileHashInfo((*package)[index]->path, (*package)[index]->hash, calculatedHash));
+        scrollBox->swithLastWidget(new FileHashInfo((*package)[index]->path, (*package)[index]->hash, calculatedHash));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
