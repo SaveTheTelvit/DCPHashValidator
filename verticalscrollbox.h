@@ -19,6 +19,7 @@ public:
     void addWidget(QWidget *w);
     void swithLastWidget(QWidget *w);
     void deleteLast();
+    void deleteOnIndex(int i);
     void clear();
     int count();
 

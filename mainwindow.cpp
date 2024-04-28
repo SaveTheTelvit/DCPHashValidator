@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
-    setVerison("1.1.2.1");
+    setVerison("1.1.2.2");
     setWindowTitle("Проверка целостности DCP");
     settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);

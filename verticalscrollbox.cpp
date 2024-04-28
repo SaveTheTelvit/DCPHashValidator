@@ -37,14 +37,13 @@ void VerticalScrollBox::addWidget(QWidget *w)
 //Убирает мелькание на пограничных заменах виджета методом deleteLast -> addWidget
 void VerticalScrollBox::swithLastWidget(QWidget *w)
 {
-    if (verticalScrollBar()->isVisible()) {
-        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    if (widgetsHeight < viewport()->size().height()) {
+        deleteLast();
+        addWidget(w);
     } else {
-        setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        addWidget(w);
+        deleteOnIndex(content->count() - 2);
     }
-    deleteLast();
-    addWidget(w);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 }
 
 void VerticalScrollBox::resizeAllElements(int w)
@@ -82,6 +81,18 @@ bool VerticalScrollBox::eventFilter(QObject *obj, QEvent *event)
         }
     }
     return QObject::eventFilter(obj, event);
+}
+
+void VerticalScrollBox::deleteOnIndex(int i)
+{
+    if (content->count() > 0 && i >= 0 && i < content->count()) {
+        QWidget* w = content->itemAt(i)->widget();
+        if (w != nullptr) {
+            content->removeWidget(w);
+            delete w;
+            contentWidget->adjustSize();
+        }
+    }
 }
 
 void VerticalScrollBox::deleteLast()
