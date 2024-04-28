@@ -16,7 +16,7 @@ class HashCalculator: public QObject
     Q_OBJECT
 public:
     HashCalculator();
-    void setAssetList(QList<Asset> *assets);
+    void setAssetList(DCPPackage *pack);
     void calculateNext();
     void toBegin();
 
@@ -27,7 +27,7 @@ signals:
     void endReached();
 
 private:
-    QList<Asset> *assets;
+    DCPPackage *package;
     int currentIndex = 0;
     qint64 processed = 0;
 };

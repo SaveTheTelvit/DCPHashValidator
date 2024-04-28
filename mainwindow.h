@@ -60,7 +60,7 @@ private:
     int cou = 0;
     bool processed = false;
     int lastViewportWidth = 0 , items = 0;
-    void calculateHashes(QList<Asset> *assets);
+    void calculateHashes(DCPPackage *package);
     void setVerison(QString version);
     void setupOnChanges(QList<QPair<int, bool>> changes);
 

@@ -14,6 +14,7 @@ VerticalScrollBox::VerticalScrollBox(QWidget *parent)
     setWidget(contentWidget);
     setBackgroundRole(QPalette::Dark);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    verticalScrollBar()->setContextMenuPolicy(Qt::NoContextMenu);
     viewport()->installEventFilter(this);
 }
 

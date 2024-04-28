@@ -8,7 +8,6 @@ Settings::Settings(QWidget *parent)
     ui->setupUi(this);
     setWindowTitle("Настройки");
     setModal(true);
-    setWindowFlag(Qt::WindowStaysOnTopHint);
 }
 
 Settings::~Settings()

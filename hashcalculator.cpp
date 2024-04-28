@@ -2,17 +2,17 @@
 
 HashCalculator::HashCalculator() {}
 
-void HashCalculator::setAssetList(QList<Asset> *assetList)
+void HashCalculator::setAssetList(DCPPackage *pack)
 {
-    assets = assetList;
+    package = pack;
     toBegin();
 }
 
 void HashCalculator::calculateNext()
 {
-    if (currentIndex < assets->count()) {
-        if (!((*assets)[currentIndex].type == Asset::AdditionalFiles || (*assets)[currentIndex].type == Asset::PackingList)) {
-            QFile file((*assets)[currentIndex].path);
+    if (currentIndex < package->size()) {
+        if (!((*package)[currentIndex]->type == Asset::AdditionalFiles || (*package)[currentIndex]->type == Asset::PackingList)) {
+            QFile file((*package)[currentIndex]->path);
             if (!file.open(QIODevice::ReadOnly)) {
                 emit errorOccured(currentIndex++, "Файл не найден");
                 return;

@@ -15,7 +15,7 @@ ErrorElement::ErrorElement(QString path, QString error, VScrollBoxElement *paren
     QFont font("Cantarell", 7);
     DynamicDeleteLabel *pathLabel = new DynamicDeleteLabel;
     pathLabel->setDeleteIndex(6);
-    pathLabel->setContent("Путь: " + filePath);
+    if (!filePath.isEmpty()) pathLabel->setContent("Путь: " + filePath);
     pathLabel->resize(pathLabel->sizeHint());
     pathLabel->setFont(font);
     addInterfaceWidget(pathLabel, 80, 15, VScrollBoxElement::ResizeToRightBorder);

@@ -7,8 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
-    setVerison("1.1.0");
-    setWindowTitle("Провека целостности DCP");
+    setVerison("1.1.2.1");
+    setWindowTitle("Проверка целостности DCP");
     settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);
     scrollBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
@@ -23,14 +23,20 @@ MainWindow::MainWindow(QWidget *parent)
                                 "selection-color: rgba(0,0,0,0); "
                                 "color: rgba(0,0,0,0);}"
                                 );
+    ui->lineEdit->setContextMenuPolicy(Qt::NoContextMenu);
     connect(settings, &Settings::changeSettings, this, &MainWindow::setupOnChanges);
 }
 
-void MainWindow::calculateHashes(QList<Asset> *assets)
+void MainWindow::calculateHashes(DCPPackage *package)
 {
+    if (!package->isPKLExist()) {
+        scrollBox->addWidget(new ErrorElement(package->PKL()->path, "PKL файл не обнаружен. Проверка невозможна."));
+        ui->pushButton->setEnabled(true);
+        return;
+    }
     QThread *thread = new QThread;
     HashCalculator *hasher = new HashCalculator;
-    hasher->setAssetList(assets);
+    hasher->setAssetList(package);
     hasher->moveToThread(thread);
     controller->createConnection(thread, &QThread::started, this, [=](){
         HashCalculatorElement *progress = new HashCalculatorElement;
@@ -48,7 +54,7 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
         scrollBox->deleteLast();
-        scrollBox->addWidget(new ErrorElement((*assets)[index].path, error));
+        scrollBox->addWidget(new ErrorElement((*package)[index]->path, error));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
@@ -57,7 +63,7 @@ void MainWindow::calculateHashes(QList<Asset> *assets)
     controller->createConnection(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
         controller->disconnectOnName("progress");
         scrollBox->deleteLast();
-        scrollBox->addWidget(new FileHashInfo((*assets)[index].path, (*assets)[index].hash, calculatedHash));
+        scrollBox->addWidget(new FileHashInfo((*package)[index]->path, (*package)[index]->hash, calculatedHash));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
@@ -81,7 +87,7 @@ void MainWindow::on_pushButton_clicked()
     QFileDialog dialog;
     dialog.setFilter(QDir::NoDotAndDotDot | QDir::Files);
     dialog.setFileMode(QFileDialog::ExistingFile);
-    dialog.setNameFilter("ASSETMAP (ASSETMAP)");
+    dialog.setNameFilter("ASSETMAP (ASSETMAP ASSETMAP.xml)");
     dialog.setWindowTitle("Выберете ASSETMAP файл DCP пакета");
     if (dialog.exec()) {
         currentPath = dialog.directory().path();
@@ -136,6 +142,7 @@ void MainWindow::on_lineEdit_returnPressed()
                                     "color: rgba(0,0,0,0);}"
                                     );
         ui->lineEdit->clear();
+        scrollBox->setFocus();
     }
 }
 
@@ -152,8 +159,10 @@ void MainWindow::setupOnChanges(QList<QPair<int, bool>> changes)
         case Settings::TopHint:
             if (it->second) {
                 setWindowFlag(Qt::WindowStaysOnTopHint);
+                settings->setWindowFlag(Qt::WindowStaysOnTopHint);
             } else {
                 setWindowFlag(Qt::WindowStaysOnTopHint, false);
+                settings->setWindowFlag(Qt::WindowStaysOnTopHint, false);
             }
             setVisible(true);
             break;
