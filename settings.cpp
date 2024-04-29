@@ -28,9 +28,8 @@ void Settings::on_discardButton_clicked()
 void Settings::on_acceptButton_clicked()
 {
     QList<QPair<int, bool>> changes;
-    if (topHintSetting != ui->topHintBox->isChecked()) {
-        changes.push_back({TopHint, (topHintSetting = ui->topHintBox->isChecked())});
-    }
+    if (topHintSetting != ui->topHintBox->isChecked()) changes.push_back({TopHint, (topHintSetting = ui->topHintBox->isChecked())});
+    if (HighPrioritySetting != ui->highPriorityBox->isChecked()) changes.push_back({HighPriority, (HighPrioritySetting = ui->highPriorityBox->isChecked())});
     emit changeSettings(changes);
     close();
 }

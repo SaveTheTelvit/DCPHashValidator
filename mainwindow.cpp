@@ -6,8 +6,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    thread()->setPriority(QThread::NormalPriority);
     ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
-    setVerison("1.1.2.2");
+    setVerison("1.2.0.1");
     setWindowTitle("Проверка целостности DCP");
     settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);
@@ -15,16 +16,18 @@ MainWindow::MainWindow(QWidget *parent)
     ui->gridLayout->addWidget(scrollBox, 0, 0);
     ui->gridLayout->addWidget(ui->widget, 0, 1);
     controller = new ConnectionController(this);
-    ui->pushButton_2->setVisible(false);
-    ui->pushButton_3->setVisible(false);
-    ui->lineEdit->setStyleSheet("QLineEdit {selection-background-color: transparent; "
-                                "background-color: transparent; "
-                                "border: none; "
-                                "selection-color: rgba(0,0,0,0); "
-                                "color: rgba(0,0,0,0);}"
-                                );
+    enableDevTools(false);
     ui->lineEdit->setContextMenuPolicy(Qt::NoContextMenu);
     connect(settings, &Settings::changeSettings, this, &MainWindow::setupOnChanges);
+    connect(ui->speedList, &QListWidget::currentRowChanged, this, [=](int index){
+        if (index != -1) {
+            if (speeds[index] != -1) {
+                ui->speedLabel->setText("Скорость: " + QString::number(speeds[index] / 10) + ',' + QString::number(speeds[index] % 10) + " Мб/с");
+            } else {
+                ui->speedLabel->setText("Скорость: Ошибка");
+            }
+        } else ui->speedLabel->clear();
+    });
 }
 
 void MainWindow::calculateHashes(DCPPackage *package)
@@ -34,11 +37,11 @@ void MainWindow::calculateHashes(DCPPackage *package)
         ui->pushButton->setEnabled(true);
         return;
     }
-    QThread *thread = new QThread;
+    hashThread = new QThread;
     HashCalculator *hasher = new HashCalculator;
     hasher->setAssetList(package);
-    hasher->moveToThread(thread);
-    controller->createConnection(thread, &QThread::started, this, [=](){
+    hasher->moveToThread(hashThread);
+    controller->createConnection(hashThread, &QThread::started, this, [=](){
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
@@ -49,10 +52,15 @@ void MainWindow::calculateHashes(DCPPackage *package)
         scrollBox->deleteLast();
         ui->pushButton->setEnabled(true);
         controller->disconnectOnObject(this); // удаление всех соединений в которых завязан this
-        thread->quit();
+        hashThread->quit();
     });
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
+        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path.mid((*package)[index]->path.lastIndexOf('/') + 1));
+        item->setFont(QFont("Cantarell", 7));
+        speeds.push_front(-1);
+        ui->speedList->insertItem(0, item);
+        ui->speedList->setCurrentRow(0);
         scrollBox->swithLastWidget(new ErrorElement((*package)[index]->path, error));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
@@ -62,17 +70,25 @@ void MainWindow::calculateHashes(DCPPackage *package)
     controller->createConnection(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
         controller->disconnectOnName("progress");
         scrollBox->swithLastWidget(new FileHashInfo((*package)[index]->path, (*package)[index]->hash, calculatedHash));
+        speeds.push_front(static_cast<int>(((*package)[index]->size * 10.024f) / timeStamp.msecsTo(QDateTime::currentDateTime())));
+        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path.mid((*package)[index]->path.lastIndexOf('/') + 1));
+        item->setFont(QFont("Cantarell", 7));
+        ui->speedList->insertItem(0, item);
+        ui->speedList->setCurrentRow(0);
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
         emit calculateNext();
     });
     controller->createConnection(this, &MainWindow::calculateNext, hasher, &HashCalculator::calculateNext);
-    controller->createConnection(thread, &QThread::finished, this, [=](){
-        thread->deleteLater();
+    controller->createConnection(hashThread, &QThread::finished, this, [=](){
+        delete hashThread;
         controller->disconnectOnObject(this);
     });
-    thread->start();
+    controller->createConnection(this, &MainWindow::calculateNext, this, [=](){
+        timeStamp = QDateTime::currentDateTime();
+    });
+    hashThread->start(priority);
 }
 
 MainWindow::~MainWindow()
@@ -115,7 +131,9 @@ void MainWindow::on_pushButton_2_clicked()
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    scrollBox->clear();
+    if (ui->lineEdit->text() == "Full") {
+        scrollBox->clear();
+    } else scrollBox->deleteLast();
 }
 
 void MainWindow::setVerison(QString version)
@@ -126,11 +144,28 @@ void MainWindow::setVerison(QString version)
 void MainWindow::on_lineEdit_returnPressed()
 {
     if (ui->lineEdit->text() == "DevTools = On") {
+        enableDevTools();
+    } else if (ui->lineEdit->text() == "DevTools = Off") {
+        enableDevTools(false);
+    }
+}
+
+
+void MainWindow::on_settingsButton_clicked()
+{
+    settings->exec();
+}
+
+void MainWindow::enableDevTools(bool enable)
+{
+    if (enable) {
         ui->pushButton_2->setVisible(true);
         ui->pushButton_3->setVisible(true);
         ui->lineEdit->setStyleSheet(QLineEdit().styleSheet());
         ui->lineEdit->clear();
-    } else if (ui->lineEdit->text() == "DevTools = Off") {
+        ui->speedLabel->setVisible(true);
+        ui->speedList->setVisible(true);
+    } else {
         ui->pushButton_2->setVisible(false);
         ui->pushButton_3->setVisible(false);
         ui->lineEdit->setStyleSheet("QLineEdit {selection-background-color: transparent; "
@@ -139,15 +174,11 @@ void MainWindow::on_lineEdit_returnPressed()
                                     "selection-color: rgba(0,0,0,0); "
                                     "color: rgba(0,0,0,0);}"
                                     );
+        ui->speedLabel->setVisible(false);
+        ui->speedList->setVisible(false);
         ui->lineEdit->clear();
         scrollBox->setFocus();
     }
-}
-
-
-void MainWindow::on_settingsButton_clicked()
-{
-    settings->exec();
 }
 
 void MainWindow::setupOnChanges(QList<QPair<int, bool>> changes)
@@ -164,6 +195,13 @@ void MainWindow::setupOnChanges(QList<QPair<int, bool>> changes)
             }
             setVisible(true);
             break;
+        case Settings::HighPriority:
+            if (it->second) {
+                priority = QThread::NormalPriority;
+            } else {
+                priority = QThread::HighPriority;
+            }
+            if (hashThread && hashThread->isRunning()) hashThread->setPriority(priority);
         }
     }
 }

@@ -14,7 +14,8 @@ class Settings : public QDialog
 
 public:
     enum {
-        TopHint = 0
+        TopHint = 0,
+        HighPriority = 1
     };
     explicit Settings(QWidget *parent = nullptr);
     ~Settings();
@@ -29,6 +30,7 @@ private slots:
 private:
     Ui::Settings *ui;
     bool topHintSetting = false;
+    bool HighPrioritySetting = false;
     void setupSettings();
 
 protected:

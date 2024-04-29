@@ -15,6 +15,8 @@
 #include <QCloseEvent>
 #include <QMessageBox>
 #include <QIcon>
+#include <QDateTime>
+#include <QListWidgetItem>
 
 #include "verticalscrollbox.h"
 #include "filehashinfo.h"
@@ -56,13 +58,18 @@ private:
     ConnectionController *controller;
     Settings *settings;
     QString currentPath;
+    QThread *hashThread = nullptr;
+    QThread::Priority priority = QThread::NormalPriority;
     Ui::MainWindow *ui;
     int cou = 0;
     bool processed = false;
     int lastViewportWidth = 0 , items = 0;
+    QVector<int> speeds;
+    QDateTime timeStamp;
     void calculateHashes(DCPPackage *package);
     void setVerison(QString version);
     void setupOnChanges(QList<QPair<int, bool>> changes);
+    void enableDevTools(bool enable = true);
 
 protected:
     void closeEvent(QCloseEvent *event) override;

@@ -18,6 +18,7 @@ struct Asset {
     QString id;
     QString path;
     QString hash;
+    qint64 size;
     unsigned int type = Stream;
     bool inPkl = false;
 };

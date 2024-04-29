@@ -64,6 +64,19 @@
     <string>Отмена</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="highPriorityBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>221</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Повышенный приоритет</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>
