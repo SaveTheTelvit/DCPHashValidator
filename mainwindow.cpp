@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     thread()->setPriority(QThread::NormalPriority);
     ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
-    setVerison("1.2.0.1");
+    setVerison("1.2.0.2");
     setWindowTitle("Проверка целостности DCP");
     settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);
@@ -32,11 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::calculateHashes(DCPPackage *package)
 {
-    if (!package->isPKLExist()) {
-        scrollBox->addWidget(new ErrorElement(package->PKL()->path, "PKL файл не обнаружен. Проверка невозможна."));
-        ui->pushButton->setEnabled(true);
-        return;
-    }
     hashThread = new QThread;
     HashCalculator *hasher = new HashCalculator;
     hasher->setAssetList(package);
@@ -108,9 +103,18 @@ void MainWindow::on_pushButton_clicked()
         QString filePath = dialog.selectedFiles().at(0);
         if (filePath != "") {
             scrollBox->clear();
-            ui->pushButton->setEnabled(false);
             scrollBox->setFocus();
-            calculateHashes(XmlFileReaderModule::getFullAsset(filePath));
+            DCPPackage *package = XmlFileReaderModule::getFullAsset(filePath);
+            if (!package) {
+                scrollBox->addWidget(new ErrorElement(filePath, "Возникла ошибка при чтении файла " +  filePath.mid(filePath.lastIndexOf('/') + 1) + '.'));
+            } else if (!package->isPKLExist()) {
+                scrollBox->addWidget(new ErrorElement(package->PKL()->path, "PKL файл не обнаружен. Проверка невозможна."));
+            } else if (package->isPKLDamaged()) {
+                scrollBox->addWidget(new ErrorElement(package->PKL()->path, "Возникла ошибка при чтении PKL файла."));
+            } else {
+                ui->pushButton->setEnabled(false);
+                calculateHashes(package);
+            }
         }
     }
 }

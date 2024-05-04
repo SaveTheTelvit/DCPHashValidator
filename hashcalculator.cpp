@@ -13,8 +13,11 @@ void HashCalculator::calculateNext()
     if (currentIndex < package->size()) {
         if (!((*package)[currentIndex]->type == Asset::AdditionalFiles || (*package)[currentIndex]->type == Asset::PackingList)) {
             QFile file((*package)[currentIndex]->path);
-            if (!file.open(QIODevice::ReadOnly)) {
+            if (!file.exists()) {
                 emit errorOccured(currentIndex++, "Файл не найден");
+                return;
+            }else if (!file.open(QIODevice::ReadOnly)) {
+                emit errorOccured(currentIndex++, "Файл не может быть открыт");
                 return;
             }
             const int bufferSize = 4096;

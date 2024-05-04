@@ -3,14 +3,16 @@
 DCPPackage* XmlFileReaderModule::getFullAsset(const QString &path, int mode)
 {
     DCPPackage *package = readAssetmap(path);
+    if (!package) return nullptr;
     if ((*package).isPKLExist()) {
-        assetPKL((*package).PKL()->path, package);
-        if (mode == WithVolindex) {
-            Asset volAsset;
-            volAsset.path = path.mid(0, path.lastIndexOf('/')) + "/VOLINDEX" + ((path.mid(path.size() - 4) == ".xml") ? ".xml" : "");
-            volAsset.type = Asset::AdditionalFiles;
-            package->push_back(volAsset);
-        }
+        if (assetPKL((*package).PKL()->path, package)) {
+            if (mode == WithVolindex) {
+                Asset volAsset;
+                volAsset.path = path.mid(0, path.lastIndexOf('/')) + "/VOLINDEX" + ((path.mid(path.size() - 4) == ".xml") ? ".xml" : "");
+                volAsset.type = Asset::AdditionalFiles;
+                package->push_back(volAsset);
+            }
+        } else (*package).setPKLDamageSus(true);
         return package;
     }
     return package;
@@ -22,8 +24,9 @@ DCPPackage* XmlFileReaderModule::readAssetmap(const QString &path)
     if (file.open(QIODevice::ReadOnly)) {
         DCPPackage *package = new DCPPackage;
         QXmlStreamReader xml(&file);
-        while (!xml.atEnd() && !xml.hasError()) {
+        while (!xml.atEnd()) {
             QXmlStreamReader::TokenType token = xml.readNext();
+            if (xml.hasError()) return nullptr;
             if (token == QXmlStreamReader::StartElement) {
                 if (xml.name().toString() == "Asset") {
                     package->push_back(readAssetmapData(xml, path));
@@ -41,8 +44,9 @@ DCPPackage* XmlFileReaderModule::readPKL(const QString &path)
     if (file.open(QIODevice::ReadOnly)) {
         DCPPackage *package = new DCPPackage;
         QXmlStreamReader xml(&file);
-        while (!xml.atEnd() && !xml.hasError()) {
+        while (!xml.atEnd()) {
             QXmlStreamReader::TokenType token = xml.readNext();
+            if (xml.hasError()) return nullptr;
             if (token == QXmlStreamReader::StartElement) {
                 if (xml.name().toString() == "Asset") {
                     package->push_back(readPKLData(xml));
@@ -57,11 +61,16 @@ DCPPackage* XmlFileReaderModule::readPKL(const QString &path)
 bool XmlFileReaderModule::assetPKL(const QString &path, DCPPackage *package)
 {
     QFile file(path);
+    DCPPackage bufferData = *package;
     if (file.exists() && file.open(QIODevice::ReadOnly)) {
         QList<int> readedIndex;
         QXmlStreamReader xml(&file);
-        while (!xml.atEnd() && !xml.hasError()) {
+        while (!xml.atEnd()) {
             QXmlStreamReader::TokenType token = xml.readNext();
+            if (xml.hasError()) {
+                *package = bufferData;
+                return false;
+            }
             if (token == QXmlStreamReader::StartElement) {
                 if (xml.name().toString() == "Asset") {
                     assetPKLData(xml, package, readedIndex);
@@ -76,6 +85,7 @@ bool XmlFileReaderModule::assetPKL(const QString &path, DCPPackage *package)
 Asset XmlFileReaderModule::readAssetmapData(QXmlStreamReader &xml, const QString &path)
 {
     Asset asset;
+    qCritical() << "is read data";
     while (!xml.atEnd() && !xml.hasError()) {
         QXmlStreamReader::TokenType token = xml.readNext();
         if (token == QXmlStreamReader::StartElement) {

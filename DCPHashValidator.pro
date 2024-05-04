@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-VERSION = 1.2.0.1
+VERSION = 1.2.0.2
 QMAKE_TARGET_COMPANY = Eugene Dokuchaev
 QMAKE_TARGET_PRODUCT = DCP Hash Validator
 QMAKE_TARGET_COPYRIGHT = Eugene Dokuchaev

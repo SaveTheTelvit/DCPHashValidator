@@ -65,10 +65,19 @@ struct DCPPackage {
     bool isCPLExist() {
         return CPLExist;
     }
+
+    bool isPKLDamaged() {
+        return PKLDamaged;
+    }
+
+    void setPKLDamageSus(bool sus) {
+        PKLDamaged = sus;
+    }
 private:
     QList<Asset> assets;
     int pklPos = -1;
     int cplPos = -1;
+    bool PKLDamaged = false;
     bool PKLExist = false;
     bool CPLExist = false;
 };
