@@ -30,8 +30,7 @@ private slots:
 private:
     Ui::Settings *ui;
     bool topHintSetting = false;
-    bool HighPrioritySetting = false;
-    void setupSettings();
+    bool highPrioritySetting = false;
 
 protected:
     void closeEvent(QCloseEvent *event) override;

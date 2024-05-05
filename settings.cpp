@@ -15,11 +15,6 @@ Settings::~Settings()
     delete ui;
 }
 
-void Settings::setupSettings()
-{
-    if (topHintSetting) ui->topHintBox->setChecked(true);
-}
-
 void Settings::on_discardButton_clicked()
 {
     close();
@@ -29,7 +24,7 @@ void Settings::on_acceptButton_clicked()
 {
     QList<QPair<int, bool>> changes;
     if (topHintSetting != ui->topHintBox->isChecked()) changes.push_back({TopHint, (topHintSetting = ui->topHintBox->isChecked())});
-    if (HighPrioritySetting != ui->highPriorityBox->isChecked()) changes.push_back({HighPriority, (HighPrioritySetting = ui->highPriorityBox->isChecked())});
+    if (highPrioritySetting != ui->highPriorityBox->isChecked()) changes.push_back({HighPriority, (highPrioritySetting = ui->highPriorityBox->isChecked())});
     emit changeSettings(changes);
     close();
 }
@@ -37,5 +32,6 @@ void Settings::on_acceptButton_clicked()
 void Settings::closeEvent(QCloseEvent *event)
 {
     ui->topHintBox->setChecked(topHintSetting);
+    ui->highPriorityBox->setChecked(highPrioritySetting);
     QDialog::closeEvent(event);
 }
