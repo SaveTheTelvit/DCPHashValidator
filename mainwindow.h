@@ -28,6 +28,7 @@
 #include "xmlfilereadermodule.h"
 #include "connectioncontroller.h"
 #include "settings.h"
+#include "dcppackage.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

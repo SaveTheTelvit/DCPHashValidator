@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     thread()->setPriority(QThread::NormalPriority);
     ui->settingsButton->setIcon(QIcon(":/icons/settings.png"));
-    setVerison("1.2.0.2");
+    setVerison("1.2.1.0");
     setWindowTitle("Проверка целостности DCP");
     settings = new Settings(this);
     scrollBox = new VerticalScrollBox(this);
@@ -51,12 +51,12 @@ void MainWindow::calculateHashes(DCPPackage *package)
     });
     controller->createConnection(hasher, &HashCalculator::errorOccured, this, [=](int index, const QString error) {
         controller->disconnectOnName("progress");
-        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path.mid((*package)[index]->path.lastIndexOf('/') + 1));
+        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path);
         item->setFont(QFont("Cantarell", 7));
         speeds.push_front(-1);
         ui->speedList->insertItem(0, item);
         ui->speedList->setCurrentRow(0);
-        scrollBox->swithLastWidget(new ErrorElement((*package)[index]->path, error));
+        scrollBox->swithLastWidget(new ErrorElement(package->pathOfAsset(index), error));
         HashCalculatorElement *progress = new HashCalculatorElement;
         scrollBox->addWidget(progress);
         controller->createConnection("progress", hasher, &HashCalculator::processingProcess, progress, &HashCalculatorElement::setValue);
@@ -64,9 +64,9 @@ void MainWindow::calculateHashes(DCPPackage *package)
     });
     controller->createConnection(hasher, &HashCalculator::hashCalculated, this, [=](int index, const QString calculatedHash){
         controller->disconnectOnName("progress");
-        scrollBox->swithLastWidget(new FileHashInfo((*package)[index]->path, (*package)[index]->hash, calculatedHash));
+        scrollBox->swithLastWidget(new FileHashInfo(package->pathOfAsset(index), (*package)[index]->hash, calculatedHash));
         speeds.push_front(static_cast<int>(((*package)[index]->size * 10.024f) / timeStamp.msecsTo(QDateTime::currentDateTime())));
-        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path.mid((*package)[index]->path.lastIndexOf('/') + 1));
+        QListWidgetItem *item = new QListWidgetItem(QTime::currentTime().toString("hh:mm:ss ") + (*package)[index]->path);
         item->setFont(QFont("Cantarell", 7));
         ui->speedList->insertItem(0, item);
         ui->speedList->setCurrentRow(0);
@@ -108,9 +108,9 @@ void MainWindow::on_pushButton_clicked()
             if (!package) {
                 scrollBox->addWidget(new ErrorElement(filePath, "Возникла ошибка при чтении файла " +  filePath.mid(filePath.lastIndexOf('/') + 1) + '.'));
             } else if (!package->isPKLExist()) {
-                scrollBox->addWidget(new ErrorElement(package->PKL()->path, "PKL файл не обнаружен. Проверка невозможна."));
+                scrollBox->addWidget(new ErrorElement(package->pathOfAsset(package->PKL()), "PKL файл не обнаружен. Проверка невозможна."));
             } else if (package->isPKLDamaged()) {
-                scrollBox->addWidget(new ErrorElement(package->PKL()->path, "Возникла ошибка при чтении PKL файла."));
+                scrollBox->addWidget(new ErrorElement(package->pathOfAsset(package->PKL()), "Возникла ошибка при чтении PKL файла."));
             } else {
                 ui->pushButton->setEnabled(false);
                 calculateHashes(package);

@@ -12,7 +12,7 @@ void HashCalculator::calculateNext()
 {
     if (currentIndex < package->size()) {
         if (!((*package)[currentIndex]->type == Asset::AdditionalFiles || (*package)[currentIndex]->type == Asset::PackingList)) {
-            QFile file((*package)[currentIndex]->path);
+            QFile file(package->path() + '/' + (*package)[currentIndex]->path);
             if (!file.exists()) {
                 emit errorOccured(currentIndex++, "Файл не найден");
                 return;

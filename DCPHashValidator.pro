@@ -4,7 +4,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17
 
-VERSION = 1.2.0.2
+VERSION = 1.2.1.0
 QMAKE_TARGET_COMPANY = Eugene Dokuchaev
 QMAKE_TARGET_PRODUCT = DCP Hash Validator
 QMAKE_TARGET_COPYRIGHT = Eugene Dokuchaev
@@ -12,6 +12,7 @@ QMAKE_TARGET_COPYRIGHT = Eugene Dokuchaev
 win32: RC_ICONS = $$PWD/icon.ico
 
 SOURCES += \
+    dcppackage.cpp \
     dynamicdeletelabel.cpp \
     errorelement.cpp \
     filehashinfo.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 
 HEADERS += \
     connectioncontroller.h \
+    dcppackage.h \
     dynamicdeletelabel.h \
     errorelement.h \
     filehashinfo.h \

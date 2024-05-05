@@ -9,7 +9,8 @@
 #include <QTimer>
 #include <QDebug>
 
-#include <structs.h>
+#include "structs.h"
+#include "dcppackage.h"
 
 class HashCalculator: public QObject
 {
